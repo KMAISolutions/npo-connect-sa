@@ -24,7 +24,7 @@ const ProposalWizardModal: React.FC<ProposalWizardModalProps> = ({ onClose, onBa
     try {
       const proposalText = await generateProposal(data);
       setGeneratedProposal(proposalText);
-    } catch (err) {
+    } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
       setError(errorMessage);
     } finally {

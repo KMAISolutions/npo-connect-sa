@@ -23,7 +23,7 @@ const Modal: React.FC<ModalProps> = ({ title, onClose, onBack, children }) => {
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4 transition-opacity duration-300"
-      onClick={onClose}
+      onClick={(e: React.MouseEvent) => e.stopPropagation()} // Changed to stopPropagation to prevent closing when clicking inside
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"

@@ -1,15 +1,14 @@
-
 import React, { useEffect } from 'react';
 import { Card } from './ui/Card';
 import type { Npo } from '../types';
 
-interface NpoDetailModalProps {
-  npo: Npo;
-  onClose: () => void;
-  onDonateClick: (npo: Npo) => void;
+interface DetailItemProps { 
+    label: string; 
+    value?: React.ReactNode | null; 
+    fullWidth?: boolean 
 }
 
-const DetailItem: React.FC<{ label: string; value?: React.ReactNode | null; fullWidth?: boolean }> = ({ label, value, fullWidth = false }) => {
+const DetailItem: React.FC<DetailItemProps> = ({ label, value, fullWidth = false }) => {
     if (!value && value !== 0) return null;
     return (
         <div className={`flex flex-col ${fullWidth ? 'md:col-span-2' : ''}`}>
@@ -19,7 +18,12 @@ const DetailItem: React.FC<{ label: string; value?: React.ReactNode | null; full
     );
 };
 
-const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, children}) => (
+interface SectionProps {
+    title: string;
+    children: React.ReactNode;
+}
+
+const Section: React.FC<SectionProps> = ({title, children}) => (
     <Card>
         <h3 className="text-xl font-bold text-gray-800 mb-4 border-b border-gray-200 pb-3">{title}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
@@ -28,6 +32,12 @@ const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, c
     </Card>
 );
 
+
+interface NpoDetailModalProps {
+  npo: Npo;
+  onClose: () => void;
+  onDonateClick: (npo: Npo) => void;
+}
 
 export const NpoDetailModal: React.FC<NpoDetailModalProps> = ({ npo, onClose, onDonateClick }) => {
   useEffect(() => {
@@ -46,7 +56,7 @@ export const NpoDetailModal: React.FC<NpoDetailModalProps> = ({ npo, onClose, on
     if (!items || items.length === 0) return <p className="text-gray-500">N/A</p>;
     return (
       <ul className="list-disc list-inside space-y-1">
-        {items.map((item, index) => <li key={index}>{item}</li>)}
+        {items.map((item: string, index: number) => <li key={index}>{item}</li>)}
       </ul>
     );
   };
@@ -139,7 +149,7 @@ export const NpoDetailModal: React.FC<NpoDetailModalProps> = ({ npo, onClose, on
                   <Card className="flex-1">
                       <h3 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Keywords</h3>
                       <div className="flex flex-wrap gap-2">
-                          {npo.keywords.map((keyword, index) => (
+                          {npo.keywords.map((keyword: string, index: number) => (
                               <span key={index} className="bg-gray-200 text-gray-700 text-xs font-medium px-2.5 py-1 rounded-full">{keyword}</span>
                           ))}
                       </div>
@@ -149,7 +159,7 @@ export const NpoDetailModal: React.FC<NpoDetailModalProps> = ({ npo, onClose, on
                 <Card className="flex-1">
                     <h3 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Associated Documents</h3>
                     <div className="space-y-2">
-                        {npo.associatedDocuments.map((doc, index) => (
+                        {npo.associatedDocuments.map((doc: { name: string, url: string }, index: number) => (
                             <a key={index} href={doc.url} target="_blank" rel="noopener noreferrer" className="flex items-center text-brand-green hover:underline p-1 rounded-md transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" /></svg>
                                 {doc.name}

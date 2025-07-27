@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import Modal from './Modal';
 import { GoogleGenAI, Chat } from '@google/genai';
@@ -35,7 +34,7 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ onClose, onBack }) => {
             });
             setChat(chatInstance);
             setMessages([{ role: 'model', text: 'Hello! I am your NPO Assistant. How can I help you today with your non-profit?' }]);
-        } catch (error) {
+        } catch (error: unknown) {
             console.error("Failed to initialize chat:", error);
             setMessages([{ role: 'model', text: 'Sorry, the chat assistant could not be initialized. Please check your API Key and network connection, then try closing and reopening this tool.' }]);
         } finally {
@@ -51,8 +50,8 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ onClose, onBack }) => {
         if (!input.trim() || !chat || isLoading) return;
 
         const userMessage: Message = { role: 'user', text: input };
-        setMessages(prev => [...prev, userMessage, { role: 'model', text: '' }]);
-        const messageToSend = input;
+        setMessages((prev: Message[]) => [...prev, userMessage, { role: 'model', text: '' }]);
+        const messageToSend: string = input;
         setInput('');
         setIsLoading(true);
         
@@ -64,17 +63,17 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ onClose, onBack }) => {
                 const chunkText = chunk.text;
                 if (chunkText) {
                     currentResponse += chunkText;
-                    setMessages(prev => {
+                    setMessages((prev: Message[]) => {
                         const newMessages = [...prev];
                         newMessages[newMessages.length - 1] = { role: 'model', text: currentResponse };
                         return newMessages;
                     });
                 }
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error("Chat API error:", error);
             const errorMsg = 'Sorry, an error occurred. This could be a network issue or a problem with the AI service. Please check your connection and try again. If the problem persists, the service may be temporarily unavailable.';
-            setMessages(prev => {
+            setMessages((prev: Message[]) => {
                 const newMessages = [...prev];
                 const lastMessage = newMessages[newMessages.length - 1];
                 if (lastMessage && lastMessage.role === 'model' && lastMessage.text === '') {
@@ -100,7 +99,7 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ onClose, onBack }) => {
           <div className="w-full h-full flex flex-col">
               <div className="flex-grow bg-white rounded-lg shadow-inner border border-gray-200 p-4 flex flex-col overflow-y-auto">
                   <div className="space-y-4">
-                      {messages.map((msg, index) => (
+                      {messages.map((msg: Message, index: number) => (
                           <div key={index} className={`flex items-start gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
                               {msg.role === 'model' && (
                                   <div className="w-8 h-8 rounded-full bg-brand-green flex items-center justify-center text-white flex-shrink-0 font-bold text-sm">
@@ -128,8 +127,8 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ onClose, onBack }) => {
                   <Input
                       type="text"
                       value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
+                      onKeyPress={(e: React.KeyboardEvent) => e.key === 'Enter' && handleSend()}
                       placeholder="Type your message..."
                       className="flex-grow !bg-white"
                       disabled={isLoading || !chat}

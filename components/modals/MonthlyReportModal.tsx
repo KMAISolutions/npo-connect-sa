@@ -42,7 +42,7 @@ const MonthlyReportModal: React.FC<MonthlyReportModalProps> = ({ onClose, onBack
         try {
             const reportText = await generateMonthlyReport(formData);
             setGeneratedReport(reportText);
-        } catch (err) {
+        } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
             setError(errorMessage);
         } finally {

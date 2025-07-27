@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import type { ProposalData } from '../types';
 import { Input } from './ui/Input';

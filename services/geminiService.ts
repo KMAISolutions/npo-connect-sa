@@ -27,7 +27,7 @@ export const generateProposal = async (data: ProposalData): Promise<string> => {
     outcomes 
   } = data;
 
-  const prompt = `
+  const prompt: string = `
     Act as an expert non-profit grant writer and business consultant in South Africa. 
     Based on the following information, generate a comprehensive and persuasive business proposal suitable for funding applications.
 
@@ -52,7 +52,7 @@ export const generateProposal = async (data: ProposalData): Promise<string> => {
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: prompt,
+      contents: [{ text: prompt }], // Changed to array of parts
     });
     return response.text;
   } catch (error) {
@@ -72,7 +72,7 @@ export const generateMonthlyReport = async (data: MonthlyReportData): Promise<st
     goalsNextMonth
   } = data;
 
-  const prompt = `
+  const prompt: string = `
     Act as an NPO management consultant. Generate a professional monthly report for "${npoName}" for the period of "${reportingPeriod}".
     
     Structure the report with the following sections using Markdown:
@@ -90,7 +90,7 @@ export const generateMonthlyReport = async (data: MonthlyReportData): Promise<st
     try {
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
-            contents: prompt,
+            contents: [{ text: prompt }], // Changed to array of parts
         });
         return response.text;
     } catch (error) {
@@ -101,7 +101,7 @@ export const generateMonthlyReport = async (data: MonthlyReportData): Promise<st
 export const findDonors = async (data: DonorMatchData): Promise<GenerateContentResponse> => {
     const { npoMission, fundingNeeds, region } = data;
 
-    const prompt = `
+    const prompt: string = `
         I am a Non-Profit Organisation in ${region}, South Africa.
         Our mission is: "${npoMission}".
         We are currently seeking funding for: "${fundingNeeds}".
@@ -114,7 +114,7 @@ export const findDonors = async (data: DonorMatchData): Promise<GenerateContentR
     try {
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
-            contents: prompt,
+            contents: [{ text: prompt }], // Changed to array of parts
             config: {
                 tools: [{ googleSearch: {} }],
             },

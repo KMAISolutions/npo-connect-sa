@@ -7,11 +7,15 @@ import { Card } from '../ui/Card';
 import { Spinner } from '../ui/Spinner';
 import { findDonors } from '../../services/geminiService';
 import type { DonorMatchData } from '../../types';
-import type { GenerateContentResponse } from '@google/genai';
+import type { GenerateContentResponse, Part } from '@google/genai'; // Added Part type
 
-const DonorMatchResults: React.FC<{ response: GenerateContentResponse }> = ({ response }) => {
+interface DonorMatchResultsProps { 
+    response: GenerateContentResponse 
+}
+
+const DonorMatchResults: React.FC<DonorMatchResultsProps> = ({ response }) => {
     const groundingMetadata = response.candidates?.[0]?.groundingMetadata;
-    const sources = groundingMetadata?.groundingChunks?.map(chunk => chunk.web).filter(Boolean) || [];
+    const sources = groundingMetadata?.groundingChunks?.map((chunk: { web?: { uri: string; title: string } }) => chunk.web).filter(Boolean) || [];
 
     const formattedContent = response.text
         .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-gray-900">$1</strong>')
@@ -30,7 +34,7 @@ const DonorMatchResults: React.FC<{ response: GenerateContentResponse }> = ({ re
                 <div className="mt-8">
                     <h3 className="text-xl font-bold text-gray-800 mb-3 border-t pt-4">Sources from Google Search</h3>
                     <div className="space-y-2">
-                        {sources.map((source, index) => (
+                        {sources.map((source: { uri: string; title: string }, index: number) => (
                             <a 
                                 key={index} 
                                 href={source.uri} 
@@ -78,7 +82,7 @@ const DonorMatchModal: React.FC<DonorMatchModalProps> = ({ onClose, onBack }) =>
         try {
             const response = await findDonors(formData);
             setResults(response);
-        } catch (err) {
+        } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
             setError(errorMessage);
         } finally {

@@ -20,7 +20,7 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ onClose, onBack }) => {
       if (storedTasks) {
         setTasks(JSON.parse(storedTasks));
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Could not load tasks from localStorage", error);
     }
   }, []);
@@ -28,7 +28,7 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ onClose, onBack }) => {
   useEffect(() => {
     try {
       localStorage.setItem('npoTasks', JSON.stringify(tasks));
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Could not save tasks to localStorage", error);
     }
   }, [tasks]);
@@ -36,12 +36,12 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ onClose, onBack }) => {
   const handleAddTask = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTask.title || !newTask.dueDate) return;
-    setTasks([...tasks, { ...newTask, id: Date.now() }].sort((a,b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()));
+    setTasks([...tasks, { ...newTask, id: Date.now() }].sort((a: Task,b: Task) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()));
     setNewTask({ title: '', dueDate: '', type: 'task' });
   };
   
   const handleDeleteTask = (id: number) => {
-      setTasks(tasks.filter(task => task.id !== id));
+      setTasks(tasks.filter((task: Task) => task.id !== id));
   };
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -87,7 +87,7 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ onClose, onBack }) => {
                       <h2 className="text-xl font-bold mb-4">Upcoming Deadlines & Tasks</h2>
                       {tasks.length > 0 ? (
                           <ul className="space-y-3">
-                              {tasks.map(task => (
+                              {tasks.map((task: Task) => (
                                   <li key={task.id} className="p-4 bg-white rounded-lg flex items-center justify-between border-l-4 transition hover:shadow-md"
                                       style={{ borderColor: task.type === 'grant' ? '#ef4444' : '#16a34a' }}>
                                       <div>

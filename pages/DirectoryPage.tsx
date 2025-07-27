@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 import type { Npo } from '../types';
 import { npoData } from '../data/npoData';
@@ -6,8 +5,8 @@ import { DonationModal } from '../components/DonationModal';
 import { NpoDetailModal } from '../components/NpoDetailModal';
 
 // Custom hook for debouncing input
-const useDebounce = (value: string, delay: number) => {
-  const [debouncedValue, setDebouncedValue] = useState(value);
+const useDebounce = <T,>(value: T, delay: number): T => {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedValue(value);
@@ -26,8 +25,8 @@ const ITEMS_PER_PAGE = 6;
 
 // === SEARCH & FILTER COMPONENT ===
 interface SearchFiltersProps {
-    filters: any;
-    setFilters: (filters: any) => void;
+    filters: { name: string; city: string; sector: string; year: string };
+    setFilters: React.Dispatch<React.SetStateAction<{ name: string; city: string; sector: string; year: string }>>;
 }
 
 const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, setFilters }) => {
@@ -63,12 +62,12 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, setFilters }) =>
                 <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg className="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                          <path fillRule="evenodd" d="M5.05 4.05a7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                         </svg>
                     </div>
                     <select name="city" value={filters.city} onChange={handleInputChange} className={`${commonInputClass} pr-10 appearance-none`}>
                         <option value="">All Cities</option>
-                        {CITIES.map(city => <option key={city} value={city}>{city}</option>)}
+                        {CITIES.map((city: string) => <option key={city} value={city}>{city}</option>)}
                     </select>
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                          <svg className="w-5 h-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
@@ -84,7 +83,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, setFilters }) =>
                     </div>
                     <select name="sector" value={filters.sector} onChange={handleInputChange} className={`${commonInputClass} pr-10 appearance-none`}>
                         <option value="">All Sectors</option>
-                        {SECTORS.map(sector => <option key={sector} value={sector}>{sector}</option>)}
+                        {SECTORS.map((sector: string) => <option key={sector} value={sector}>{sector}</option>)}
                     </select>
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                          <svg className="w-5 h-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
@@ -100,7 +99,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, setFilters }) =>
                     </div>
                     <select name="year" value={filters.year} onChange={handleInputChange} className={`${commonInputClass} pr-10 appearance-none`}>
                         <option value="">All Years</option>
-                        {YEARS.map(year => <option key={year} value={year}>{year}</option>)}
+                        {YEARS.map((year: number) => <option key={year} value={year}>{year}</option>)}
                     </select>
                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                          <svg className="w-5 h-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
@@ -113,7 +112,13 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, setFilters }) =>
 
 
 // === NPO CARD COMPONENT ===
-const NpoCard: React.FC<{ npo: Npo, onDonateClick: (npo: Npo) => void, onDetailClick: (npo: Npo) => void }> = ({ npo, onDonateClick, onDetailClick }) => (
+interface NpoCardProps {
+    npo: Npo;
+    onDonateClick: (npo: Npo) => void;
+    onDetailClick: (npo: Npo) => void;
+}
+
+const NpoCard: React.FC<NpoCardProps> = ({ npo, onDonateClick, onDetailClick }) => (
     <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col border border-gray-200">
         <div className="p-5 flex-grow">
             <h3 className="text-xl font-bold text-gray-900 truncate">{npo.name}</h3>
@@ -139,7 +144,13 @@ const NpoCard: React.FC<{ npo: Npo, onDonateClick: (npo: Npo) => void, onDetailC
 );
 
 // === NPO TABLE COMPONENT ===
-const NpoTable: React.FC<{ npos: Npo[], onDonateClick: (npo: Npo) => void, onDetailClick: (npo: Npo) => void }> = ({ npos, onDonateClick, onDetailClick }) => (
+interface NpoTableProps {
+    npos: Npo[];
+    onDonateClick: (npo: Npo) => void;
+    onDetailClick: (npo: Npo) => void;
+}
+
+const NpoTable: React.FC<NpoTableProps> = ({ npos, onDonateClick, onDetailClick }) => (
     <div className="bg-white rounded-lg shadow-md overflow-x-auto">
         <table className="w-full text-sm text-left text-gray-600">
             <thead className="text-xs text-gray-700 uppercase bg-gray-100">
@@ -152,7 +163,7 @@ const NpoTable: React.FC<{ npos: Npo[], onDonateClick: (npo: Npo) => void, onDet
                 </tr>
             </thead>
             <tbody>
-                {npos.map(npo => (
+                {npos.map((npo: Npo) => (
                     <tr key={npo.id} className="bg-white border-b hover:bg-gray-50">
                         <th scope="row" className="px-6 py-4 font-bold text-gray-900 whitespace-nowrap">
                             <button onClick={() => onDetailClick(npo)} className="text-left hover:text-brand-green">{npo.name}</button>
@@ -174,9 +185,15 @@ const NpoTable: React.FC<{ npos: Npo[], onDonateClick: (npo: Npo) => void, onDet
 );
 
 // === PAGINATION COMPONENT ===
-const Pagination: React.FC<{ currentPage: number, totalPages: number, onPageChange: (page: number) => void }> = ({ currentPage, totalPages, onPageChange }) => (
+interface PaginationProps {
+    currentPage: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
+}
+
+const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => (
     <div className="flex justify-center items-center space-x-2 mt-8">
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page: number) => (
             <button
                 key={page}
                 onClick={() => onPageChange(page)}
@@ -195,7 +212,7 @@ const DirectoryPage: React.FC = () => {
     const [filters, setFilters] = useState({ name: '', city: '', sector: '', year: '' });
     const [donationModalNpo, setDonationModalNpo] = useState<Npo | null>(null);
     const [detailModalNpo, setDetailModalNpo] = useState<Npo | null>(null);
-    const debouncedName = useDebounce(filters.name, 300);
+    const debouncedName = useDebounce<string>(filters.name, 300);
 
     const filteredNpos = useMemo(() => {
         return npoData.filter(npo => {
@@ -246,7 +263,7 @@ const DirectoryPage: React.FC = () => {
                     <>
                         {viewMode === 'card' ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {paginatedNpos.map(npo => <NpoCard key={npo.id} npo={npo} onDonateClick={setDonationModalNpo} onDetailClick={setDetailModalNpo} />)}
+                                {paginatedNpos.map((npo: Npo) => <NpoCard key={npo.id} npo={npo} onDonateClick={setDonationModalNpo} onDetailClick={setDetailModalNpo} />)}
                             </div>
                         ) : (
                             <NpoTable npos={paginatedNpos} onDonateClick={setDonationModalNpo} onDetailClick={setDetailModalNpo} />
