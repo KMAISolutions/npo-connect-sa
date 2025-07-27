@@ -52,11 +52,14 @@ export const generateProposal = async (data: ProposalData): Promise<string> => {
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: [{ text: prompt }], // Changed to array of parts
+      contents: [{ text: prompt }],
     });
+    if (response.text === undefined) {
+      throw new Error("Gemini API response text was undefined.");
+    }
     return response.text;
   } catch (error) {
-    handleError(error, 'proposal generation');
+    throw handleError(error, 'proposal generation'); // Explicitly throw
   }
 };
 
@@ -90,11 +93,14 @@ export const generateMonthlyReport = async (data: MonthlyReportData): Promise<st
     try {
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
-            contents: [{ text: prompt }], // Changed to array of parts
+            contents: [{ text: prompt }],
         });
+        if (response.text === undefined) {
+          throw new Error("Gemini API response text was undefined.");
+        }
         return response.text;
     } catch (error) {
-        handleError(error, 'monthly report generation');
+        throw handleError(error, 'monthly report generation'); // Explicitly throw
     }
 };
 
@@ -114,13 +120,13 @@ export const findDonors = async (data: DonorMatchData): Promise<GenerateContentR
     try {
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
-            contents: [{ text: prompt }], // Changed to array of parts
+            contents: [{ text: prompt }],
             config: {
                 tools: [{ googleSearch: {} }],
             },
         });
         return response;
     } catch (error) {
-        handleError(error, 'donor matching');
+        throw handleError(error, 'donor matching'); // Explicitly throw
     }
 };

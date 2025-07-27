@@ -7,17 +7,21 @@ import { Card } from '../ui/Card';
 import { Spinner } from '../ui/Spinner';
 import { findDonors } from '../../services/geminiService';
 import type { DonorMatchData } from '../../types';
-import type { GenerateContentResponse, Part } from '@google/genai'; // Added Part type
+import type { GenerateContentResponse } from '@google/genai'; // Removed unused 'Part'
 
 interface DonorMatchResultsProps { 
     response: GenerateContentResponse 
 }
 
 const DonorMatchResults: React.FC<DonorMatchResultsProps> = ({ response }) => {
-    const groundingMetadata = response.candidates?.[0]?.groundingMetadata;
-    const sources = groundingMetadata?.groundingChunks?.map((chunk: { web?: { uri: string; title: string } }) => chunk.web).filter(Boolean) || [];
+    // Filter and map to ensure uri and title are strings
+    const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks
+        ?.map(chunk => chunk.web)
+        .filter((web): web is { uri: string; title: string } => 
+            web !== undefined && web.uri !== undefined && web.title !== undefined
+        ) || [];
 
-    const formattedContent = response.text
+    const formattedContent = (response.text || '') // Provide fallback for response.text
         .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-gray-900">$1</strong>')
         .replace(/###\s(.*?)\n/g, '<h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">$1</h3>')
         .replace(/##\s(.*?)\n/g, '<h2 class="text-xl font-bold text-gray-900 mt-6 mb-3 border-b pb-2">$1</h2>')
